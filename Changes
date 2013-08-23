@@ -1,4 +1,8 @@
 Revision history for Perl extension WWW-Scraper-ISBN-BookDepository_Driver.
 
+0.02    15/09/2010
+        - reworked test structure, so easier to add sample sets.
+        - transpose &amp; to & in HTML.
+
 0.01	14/09/2010
         - initial release

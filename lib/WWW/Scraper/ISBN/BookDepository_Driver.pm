@@ -4,7 +4,7 @@ use strict;
 use warnings;
 
 use vars qw($VERSION @ISA);
-$VERSION = '0.01';
+$VERSION = '0.02';
 
 #--------------------------------------------------------------------------
 
@@ -128,6 +128,7 @@ sub search {
 	return $self->handler("Failed to find that book on The Book Depository website. [$isbn]")
 		if($html =~ m!Sorry, there are no results for!si);
     
+    $html =~ s/&amp;/&/g;
 #print STDERR "\n# content2=[\n$html\n]\n";
 
     my $data;
