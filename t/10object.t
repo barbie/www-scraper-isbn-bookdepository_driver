@@ -25,10 +25,10 @@ my %tests = (
         [ 'is',     'width',        '111'               ],
         [ 'is',     'height',       '178'               ],
         [ 'is',     'weight',       undef               ],
-        [ 'is',     'image_link',   'http://images.bookdepository.co.uk/assets/images/book/large/9780/5525/9780552557801.jpg' ],
-        [ 'is',     'thumb_link',   'http://images.bookdepository.co.uk/assets/images/book/medium/9780/5525/9780552557801.jpg' ],
-        [ 'like',   'description',  qr|When a giant wave destroys his entire Nation| ],
-        [ 'like',   'book_link',    qr|http://www.bookdepository.co.uk/book/9780552557801/Nation| ]
+        [ 'like',   'image_link',   qr|/assets/images/book/large/9780/5525/9780552557801.jpg|       ],
+        [ 'like',   'thumb_link',   qr|/assets/images/book/medium/9780/5525/9780552557801.jpg|      ],
+        [ 'like',   'description',  qr|When a giant wave destroys his entire Nation|                ],
+        [ 'like',   'book_link',    qr|http://www.bookdepository.co.uk/book/9780552557801/Nation|   ]
     ],
     '9780571239566' => [
         [ 'is',     'isbn',         '9780571239566'     ],
@@ -44,8 +44,8 @@ my %tests = (
         [ 'is',     'width',        129                 ],
         [ 'is',     'height',       198                 ],
         [ 'is',     'weight',       200                 ],
-        [ 'is',     'image_link',   'http://images.bookdepository.co.uk/assets/images/book/large/9780/5712/9780571239566.jpg' ],
-        [ 'is',     'thumb_link',   'http://images.bookdepository.co.uk/assets/images/book/medium/9780/5712/9780571239566.jpg' ],
+        [ 'like',   'image_link',   qr|/assets/images/book/large/9780/5712/9780571239566.jpg|   ],
+        [ 'like',   'thumb_link',   qr|/assets/images/book/medium/9780/5712/9780571239566.jpg|  ],
         [ 'like',   'description',  qr|Ian Curtis left behind a legacy rich in artistic genius| ],
         [ 'like',   'book_link',    qr|http://www.bookdepository.co.uk/book/9780571239566/Touching-from-a-Distance| ]
     ],
@@ -86,7 +86,7 @@ SKIP: {
             skip "Website unavailable", scalar(@{ $tests{$isbn} }) + 2   
                 if($error =~ /website appears to be unavailable/);
             skip "Book unavailable", scalar(@{ $tests{$isbn} }) + 2   
-                if($error =~ /Failed to find that book/);
+                if($error =~ /Failed to find that book/ || !$record->found);
 
             unless($record->found) {
                 diag($record->error);

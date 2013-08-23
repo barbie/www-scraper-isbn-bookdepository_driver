@@ -4,7 +4,7 @@ use strict;
 use warnings;
 
 use vars qw($VERSION @ISA);
-$VERSION = '0.04';
+$VERSION = '0.05';
 
 #--------------------------------------------------------------------------
 
@@ -142,8 +142,8 @@ sub search {
     ($data->{width})            = $html =~ m!<em>Width:</em>\s*([\d.]+)\s*mm<br/>!si;
     ($data->{height})           = $html =~ m!<em>Height:</em>\s*([\d.]+)\s*mm<br/>!si;
     ($data->{author})           = $html =~ m!<a property="dc:creator" rel="nofollow" href="[^"]+" title="[^"]+">([^<]+)</a>!si;
-    ($data->{image})            = $html =~ m!"(http://images.bookdepository.co.uk/assets/images/book/large/\d+/\d+/\d+.jpg)"!si;
-    ($data->{thumb})            = $html =~ m!"(http://images.bookdepository.co.uk/assets/images/book/medium/\d+/\d+/\d+.jpg)"!si;
+    ($data->{image})            = $html =~ m!"(http://\w+.bookdepository.co.uk/assets/images/book/large/\d+/\d+/\d+.jpg)"!si;
+    ($data->{thumb})            = $html =~ m!"(http://\w+.bookdepository.co.uk/assets/images/book/medium/\d+/\d+/\d+.jpg)"!si;
     ($data->{description})      = $html =~ m!<p class="shortDescription" property="dc:description"><strong>Short Description[^<]+</strong>([^<]+)!si;
     ($data->{weight})           = $html =~ m!<em>Weight:</em>([^<]+)g<br/>!s;
 
@@ -233,7 +233,7 @@ be forthcoming, please feel free to (politely) remind me.
 
 =head1 COPYRIGHT & LICENSE
 
-  Copyright (C) 2010 Barbie for Miss Barbell Productions
+  Copyright (C) 2010,2011 Barbie for Miss Barbell Productions
 
   This module is free software; you can redistribute it and/or
   modify it under the Artistic Licence v2.
