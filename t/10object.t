@@ -79,8 +79,8 @@ SKIP: {
     }
 
     for my $isbn (keys %tests) {
-        $record = $scraper->search($isbn);
-        my $error  = $record->error || '';
+        eval { $record = $scraper->search($isbn) };
+        my $error = $@ || $record->error || '';
 
         SKIP: {
             skip "Website unavailable", scalar(@{ $tests{$isbn} }) + 2   
@@ -88,8 +88,8 @@ SKIP: {
             skip "Book unavailable", scalar(@{ $tests{$isbn} }) + 2   
                 if($error =~ /Failed to find that book/ || !$record->found);
 
-            unless($record->found) {
-                diag($record->error);
+            unless($record && $record->found) {
+                diag("error=$error, record error=".$record->error);
             }
 
             is($record->found,1);

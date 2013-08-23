@@ -1,20 +1,27 @@
 Revision history for Perl extension WWW-Scraper-ISBN-BookDepository_Driver.
 
-0.05    11/04/2011
+0.06    2013-03-10
+        - change file dates changed to meet W3CDTF standards.
+        - added isbn-check.pl to examples.
+        - various package file updates.
+        - added minimum perl version (5.006).
+        - reworked Makefile.PL for clarity.
+
+0.05    2011-04-11
         - upgraded to Test::CPAN::Meta::JSON for tests.
         - update regexes for image/thumb extraction.
 
-0.04    29/10/2010
+0.04    2010-10-29
         - amended pingtest() in network tests.
         - added further skip test if test books are withdrawn from the site.
 
-0.03    06/10/2010
+0.03    2010-10-06
         - fixed skip count.
         - provided alternate ping test methods.
 
-0.02    15/09/2010
+0.02    2010-09-15
         - reworked test structure, so easier to add sample sets.
         - transpose &amp; to & in HTML.
 
-0.01	14/09/2010
+0.01	2010-09-14
         - initial release
