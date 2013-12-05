@@ -1,6 +1,7 @@
 Revision history for WWW-Scraper-ISBN-BookDepository_Driver
 ===========================================================
 
+0.07    2013-12-05
         - added Data::Dumper as a test prerequisite.
         - added git repository links to metadata.
 
