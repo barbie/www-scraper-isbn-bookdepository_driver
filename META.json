@@ -29,6 +29,7 @@
         },
         "test" : {
             "requires": {
+                "Data::Dumper": "0",
                 "IO::File": "0",
                 "Test::More": "0.70"
             },
@@ -53,6 +54,11 @@
 
     "resources": {
         "license": "http://www.perlfoundation.org/artistic_license_2_0",
-        "bugtracker": { "web": "http://rt.cpan.org/Public/Dist/Display.html?Name=WWW-Scraper-ISBN-BookDepository_Driver" }
+        "bugtracker": { "web": "http://rt.cpan.org/Public/Dist/Display.html?Name=WWW-Scraper-ISBN-BookDepository_Driver" },
+        "repository": {
+            "url": "git://github.com/barbie/www-scraper-isbn-bookdepository_driver.git",
+            "web": "http://github.com/barbie/www-scraper-isbn-bookdepository_driver",
+            "type": "git"
+        }
     }
 }
