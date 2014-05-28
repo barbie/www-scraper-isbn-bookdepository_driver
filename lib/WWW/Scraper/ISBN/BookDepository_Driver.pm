@@ -88,23 +88,23 @@ sub search {
 	$self->found(0);
 	$self->book(undef);
 
+    # validate and convert into EAN13 format
+    my $ean = $self->convert_to_ean13($isbn);
+    return $self->handler("Invalid ISBN specified")   
+        if(!$ean || (length $isbn == 13 && $isbn ne $ean)
+                 || (length $isbn == 10 && $isbn ne $self->convert_to_isbn10($ean)));
+
 	my $mech = WWW::Mechanize->new();
     $mech->agent_alias( 'Windows IE 6' );
     $mech->add_header( 'Accept-Encoding' => undef );
     $mech->add_header( 'Referer' => REFERER );
 
-    eval { $mech->get( SEARCH . $isbn ) };
+    eval { $mech->get( SEARCH . $ean ) };
     return $self->handler("The Book Depository website appears to be unavailable.")
 	    if($@ || !$mech->success() || !$mech->content());
 
-    my $pattern = $isbn;
-    if(length $isbn == 10) {
-        $pattern = '978' . $isbn;
-        $pattern =~ s/.$/./;
-    }
-
     my $content = $mech->content;
-    my ($link) = $content =~ m!($URL1$pattern$URL2)!si;
+    my ($link) = $content =~ m!($URL1$ean$URL2)!si;
 #print STDERR "\n# search=[".SEARCH."$isbn]\n";
 #print STDERR "\n# link1=[$URL1$pattern$URL2]\n";
 #print STDERR "\n# link2=[$link]\n";
@@ -233,9 +233,9 @@ be forthcoming, please feel free to (politely) remind me.
 
 =head1 COPYRIGHT & LICENSE
 
-  Copyright (C) 2010-2013 Barbie for Miss Barbell Productions
+  Copyright (C) 2010-2014 Barbie for Miss Barbell Productions
 
-  This module is free software; you can redistribute it and/or
+  This distribution is free software; you can redistribute it and/or
   modify it under the Artistic Licence v2.
 
 =cut
