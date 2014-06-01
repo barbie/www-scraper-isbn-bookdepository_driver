@@ -69,13 +69,10 @@ SKIP: {
 	my $isbn = "0987654321";
     my $record;
     eval { $record = $scraper->search($isbn); };
-    if($@) {
-        like($@,qr/Invalid ISBN specified/);
-    }
-    elsif($record->found) {
+    if($record->found) {
         ok(0,'Unexpectedly found a non-existent book');
     } else {
-		like($record->error,qr/Failed to find that book on The Book Depository website|website appears to be unavailable/);
+        like($record->error,qr/Invalid ISBN specified/);
     }
 
     for my $isbn (keys %tests) {
