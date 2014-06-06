@@ -1,6 +1,7 @@
 Revision history for WWW-Scraper-ISBN-BookDepository_Driver
 ===========================================================
 
+0.08    2014-06-06
         - fixed distribution name in META.
         - upgrade to WWW-Scraper-ISBN-1.00.
         - conversion routines now moved to WWW::Scraper::ISBN::Driver.
