@@ -99,26 +99,8 @@ sub search {
     $mech->add_header( 'Accept-Encoding' => undef );
     $mech->add_header( 'Referer' => REFERER );
 
+#print STDERR "\n# search=[".SEARCH."$ean]\n";
     eval { $mech->get( SEARCH . $ean ) };
-    return $self->handler("The Book Depository website appears to be unavailable.")
-	    if($@ || !$mech->success() || !$mech->content());
-
-    my $content = $mech->content;
-    my ($link) = $content =~ m!($URL1$ean$URL2)!si;
-#print STDERR "\n# search=[".SEARCH."$isbn]\n";
-#print STDERR "\n# link1=[$URL1$pattern$URL2]\n";
-#print STDERR "\n# link2=[$link]\n";
-#print STDERR "\n# content1=[\n$content\n]\n";
-#print STDERR "\n# is_html=".$mech->is_html().", content type=".$mech->content_type()."\n";
-#print STDERR "\n# dump headers=".$mech->dump_headers."\n";
-
-	return $self->handler("Failed to find that book on The Book Depository website. [$isbn]")
-		if(!$link || $content =~ m!Sorry, there are no results for!si);
-
-    $link =~ s/&amp;/&/g;
-#print STDERR "\n# link3=[$link]\n";
-
-    eval { $mech->get( $link ) };
     return $self->handler("The Book Depository website appears to be unavailable.")
 	    if($@ || !$mech->success() || !$mech->content());
 
@@ -136,16 +118,15 @@ sub search {
     ($data->{isbn10})           = $html =~ m!<span class="isbn10"><strong>ISBN 10:</strong><span>([^<]+)</span>!si;
     ($data->{publisher})        = $html =~ m!<li class='publisherName'><strong>Publisher:</strong>\s*<span class='linkSurround publisherName'><a property='dc:publisher' href='[^>]+'>([^<]+)</a></span></li>!si;
     ($data->{pubdate})          = $html =~ m!<li class='publishDate'><strong>Published:</strong>\s*<span property='dc:available'>([^<]+)</span></li>!si;
-    ($data->{title})            = $html =~ m!<span property='dc:title'>([^<]+)!si;
     ($data->{binding})          = $html =~ m!<li class='format'><strong>Format:</strong>\s*<span property="dc:format">([^<]+)!si;
     ($data->{pages})            = $html =~ m!<span property='dc:SizeOrDuration'>\s*(\d+) pages</span>!si;
     ($data->{width})            = $html =~ m!<em>Width:</em>\s*([\d.]+)\s*mm<br/>!si;
     ($data->{height})           = $html =~ m!<em>Height:</em>\s*([\d.]+)\s*mm<br/>!si;
-    ($data->{author})           = $html =~ m!<a property="dc:creator" rel="nofollow" href="[^"]+" title="[^"]+">([^<]+)</a>!si;
-    ($data->{image})            = $html =~ m!"(http://\w+.bookdepository.co.uk/assets/images/book/large/\d+/\d+/\d+.jpg)"!si;
-    ($data->{thumb})            = $html =~ m!"(http://\w+.bookdepository.co.uk/assets/images/book/medium/\d+/\d+/\d+.jpg)"!si;
-    ($data->{description})      = $html =~ m!<p class="shortDescription" property="dc:description"><strong>Short Description[^<]+</strong>([^<]+)!si;
+    ($data->{image})            = $html =~ m!"(http://\w+.bdcdn.net/assets/images/book/large/\d+/\d+/\d+.jpg)"!si;
+    ($data->{thumb})            = $html =~ m!"(http://\w+.bdcdn.net/assets/images/book/medium/\d+/\d+/\d+.jpg)"!si;
+    ($data->{description})      = $html =~ m!<meta itemprop="description" content="([^"]+)"!si;
     ($data->{weight})           = $html =~ m!<em>Weight:</em>([^<]+)g<br/>!s;
+    ($data->{title},$data->{author})    = $html =~ m!<title>(.*):\s+([^:]+)\s+:\s+\d+\s*</title>!;
 
     $data->{publisher} =~ s/&#0?39;/'/g;
     $data->{width}  = int($data->{width})   if($data->{width});
@@ -176,7 +157,7 @@ sub search {
 		'isbn'			=> $data->{isbn13},
 		'author'		=> $data->{author},
 		'title'			=> $data->{title},
-		'book_link'		=> $url,
+		'book_link'		=> "$url",
 		'image_link'	=> $data->{image},
 		'thumb_link'	=> $data->{thumb},
 		'description'	=> $data->{description},

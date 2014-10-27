@@ -4,6 +4,7 @@ Revision history for WWW-Scraper-ISBN-BookDepository_Driver
         - fixed license fields in META.json to be lists.
         - ping fix for Cygwin (thanks to Alexandr Ciornii).
         - extended META test suite.
+        - updated regex patterns for new website design.
 
 0.08    2014-06-06
         - fixed distribution name in META.
