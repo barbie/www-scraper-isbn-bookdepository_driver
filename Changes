@@ -1,6 +1,8 @@
 Revision history for WWW-Scraper-ISBN-BookDepository_Driver
 ===========================================================
 
+        - more updated regex patterns for new website design.
+
 0.09    2014-11-05
         - fixed license fields in META.json to be lists.
         - ping fix for Cygwin (thanks to Alexandr Ciornii).

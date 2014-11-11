@@ -114,24 +114,43 @@ sub search {
 #print STDERR "\n# content2=[\n$html\n]\n";
 
     my $data;
-    ($data->{isbn13})           = $html =~ m!<span class="isbn13"><strong>ISBN 13:</strong><span property="dc:identifier">([^<]+)</span>!si;
-    ($data->{isbn10})           = $html =~ m!<span class="isbn10"><strong>ISBN 10:</strong><span>([^<]+)</span>!si;
-    ($data->{publisher})        = $html =~ m!<li class='publisherName'><strong>Publisher:</strong>\s*<span class='linkSurround publisherName'><a property='dc:publisher' href='[^>]+'>([^<]+)</a></span></li>!si;
-    ($data->{pubdate})          = $html =~ m!<li class='publishDate'><strong>Published:</strong>\s*<span property='dc:available'>([^<]+)</span></li>!si;
-    ($data->{binding})          = $html =~ m!<li class='format'><strong>Format:</strong>\s*<span property="dc:format">([^<]+)!si;
-    ($data->{pages})            = $html =~ m!<span property='dc:SizeOrDuration'>\s*(\d+) pages</span>!si;
-    ($data->{width})            = $html =~ m!<em>Width:</em>\s*([\d.]+)\s*mm<br/>!si;
-    ($data->{height})           = $html =~ m!<em>Height:</em>\s*([\d.]+)\s*mm<br/>!si;
-    ($data->{image})            = $html =~ m!"(http://\w+.bdcdn.net/assets/images/book/large/\d+/\d+/\d+.jpg)"!si;
-    ($data->{thumb})            = $html =~ m!"(http://\w+.bdcdn.net/assets/images/book/medium/\d+/\d+/\d+.jpg)"!si;
-    ($data->{description})      = $html =~ m!<meta itemprop="description" content="([^"]+)"!si;
-    ($data->{weight})           = $html =~ m!<em>Weight:</em>([^<]+)g<br/>!s;
-    ($data->{title},$data->{author})    = $html =~ m!<title>(.*):\s+([^:]+)\s+:\s+\d+\s*</title>!;
 
-    $data->{publisher} =~ s/&#0?39;/'/g;
+    # first pass wih metadata
+    ($data->{isbn13})       = $html =~ m!<meta itemprop="isbn" content="([^"]+)"!si;
+    ($data->{publisher})    = $html =~ m!<meta itemprop="publisher" content="([^"]+)"!si;
+    ($data->{pubdate})      = $html =~ m!<meta itemprop="datePublished" content="([^"]+)"!si;
+    ($data->{title})        = $html =~ m!<meta itemprop="name" content="([^"]+)"!si;
+    ($data->{author})       = $html =~ m!<meta itemprop="author" content="([^"]+)"!si;
+    ($data->{description})  = $html =~ m!<meta itemprop="description" content="([^"]+)"!si;
+    ($data->{image})        = $html =~ m!<meta itemprop="image" content="([^"]+)"!si;
+    ($data->{url})          = $html =~ m!<meta itemprop="url" content="([^"]+)"!si;
+    ($data->{pages})        = $html =~ m!<meta itemprop="numberOfPages" content="([^"]+)"!si;
+
+    # second pass with page data
+    ($data->{isbn13})       = $html =~ m!<strong>ISBN 13:</strong><span property="dc:identifier">([^<]+)</span>!si              unless($data->{isbn13});
+    ($data->{publisher})    = $html =~ m!<li><strong>Publisher:</strong> <a property=[^>]+>([^<]+)</a></li>!si                  unless($data->{publisher});
+    ($data->{pubdate})      = $html =~ m!<strong>Publication date:</strong>\s*<span property='dc:available'>([^<]+)</span>!si   unless($data->{pubdate});
+    ($data->{pages})        = $html =~ m!<span property='dc:SizeOrDuration'>\s*(\d+) pages</span>!si                            unless($data->{pages});
+    ($data->{image})        = $html =~ m!"(http://\w+.bdcdn.net/assets/images/book/large/\d+/\d+/\d+.jpg)"!si                   unless($data->{image});
+    ($data->{title},$data->{author})    
+                            = $html =~ m!<title>(.*):\s+([^:]+)\s+:\s+\d+\s*</title>!                                           unless($data->{title} && $data->{author});
+
+    # other page data
+    ($data->{isbn10})       = $html =~ m!<li><strong>ISBN 10:</strong>\s*([^<]+)</li>!si;
+    ($data->{binding})      = $html =~ m!<strong>Format:</strong>\s*<span property="dc:format">([^<]+)!si;
+    ($data->{thumb})        = $html =~ m!"(http://\w+.bdcdn.net/assets/images/book/medium/\d+/\d+/\d+.jpg)"!si;
+    ($data->{width},$data->{height},$data->{depth},$data->{weight})
+                            = $html =~ m!<strong>Dimensions:</strong>\s*(\d+)mm\s*x\s*(\d+)mm\s*x\s*(\d+)mm\s*\|\s*(\d+)g!;
+
+    # clean up
+    $data->{publisher} =~ s/&#0?39;/'/g     if($data->{publisher});
     $data->{width}  = int($data->{width})   if($data->{width});
     $data->{height} = int($data->{height})  if($data->{height});
     $data->{weight} = int($data->{weight})  if($data->{weight});
+    unless($data->{thumb}) {
+        $data->{thumb} = $data->{image};
+        $data->{thumb} =~ s!/large/!/medium/!;
+    }
 
 #use Data::Dumper;
 #print STDERR "\n# " . Dumper($data);
@@ -167,7 +186,8 @@ sub search {
 		'pages'		    => $data->{pages},
 		'weight'		=> $data->{weight},
 		'width'		    => $data->{width},
-		'height'		=> $data->{height}
+		'height'		=> $data->{height},
+        'html'          => $html
 	};
 
 #use Data::Dumper;
