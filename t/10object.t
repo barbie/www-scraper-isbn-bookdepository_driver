@@ -18,7 +18,7 @@ my %tests = (
         [ 'is',     'ean13',        '9780552557801'     ],
         [ 'is',     'title',        'Nation'            ],
         [ 'is',     'author',       'Terry Pratchett'   ],
-        [ 'is',     'publisher',    'Corgi Childrens'   ],
+        [ 'is',     'publisher',    'Random House Children\'s Publishers UK'   ],
         [ 'is',     'pubdate',      '24 September 2009' ],
         [ 'is',     'binding',      'Paperback'         ],
         [ 'is',     'pages',        432                 ],
