@@ -116,7 +116,7 @@ sub search {
     my $data;
 
     # first pass wih metadata
-    ($data->{isbn13})       = $html =~ m!<meta itemprop="isbn" content="([^"]+)"!si;
+    #($data->{isbn13})       = $html =~ m!<meta itemprop="isbn" content="([^"]+)"!si;
     ($data->{publisher})    = $html =~ m!<meta itemprop="publisher" content="([^"]+)"!si;
     ($data->{pubdate})      = $html =~ m!<meta itemprop="datePublished" content="([^"]+)"!si;
     ($data->{title})        = $html =~ m!<meta itemprop="name" content="([^"]+)"!si;
@@ -127,20 +127,24 @@ sub search {
     ($data->{pages})        = $html =~ m!<meta itemprop="numberOfPages" content="([^"]+)"!si;
 
     # second pass with page data
-    ($data->{isbn13})       = $html =~ m!<strong>ISBN 13:</strong><span property="dc:identifier">([^<]+)</span>!si              unless($data->{isbn13});
-    ($data->{publisher})    = $html =~ m!<li><strong>Publisher:</strong> <a property=[^>]+>([^<]+)</a></li>!si                  unless($data->{publisher});
-    ($data->{pubdate})      = $html =~ m!<strong>Publication date:</strong>\s*<span property='dc:available'>([^<]+)</span>!si   unless($data->{pubdate});
-    ($data->{pages})        = $html =~ m!<span property='dc:SizeOrDuration'>\s*(\d+) pages</span>!si                            unless($data->{pages});
-    ($data->{image})        = $html =~ m!"(http://\w+.bdcdn.net/assets/images/book/large/\d+/\d+/\d+.jpg)"!si                   unless($data->{image});
+    ($data->{isbn13})       = $html =~ m!<label>ISBN13</label>\s*<span itemprop="isbn">(\d+)</span>!si                          unless($data->{isbn13});
+    ($data->{publisher})    = $html =~ m!<label>Publisher</label>\s*<span[^>]+>\s*<a[^>]+>\s*<span[^>]+>([^<]+)</span>!si       unless($data->{publisher});
+    ($data->{pubdate})      = $html =~ m!<label>Publication date</label>\s*<span itemprop="datePublished">([^<]+)</span>!si     unless($data->{pubdate});
+    ($data->{title})        = $html =~ m!<h1 itemprop="name"[^>]*>([^<]+)</h1>!si                                               unless($data->{title});
+    ($data->{author})       = $html =~ m!<span itemprop="name"[^>]*>([^<]+)</span>!si                                           unless($data->{author});
+    ($data->{pages})        = $html =~ m!<span itemprop="numberOfPages">(\d+) pages\s*</span>!si                                unless($data->{pages});
+    ($data->{image})        = $html =~ m!"(https://\w+.cloudfront.net/assets/images/book/lrg/\d+/\d+/\d+.jpg)"!si               unless($data->{image});
     ($data->{title},$data->{author})    
                             = $html =~ m!<title>(.*):\s+([^:]+)\s+:\s+\d+\s*</title>!                                           unless($data->{title} && $data->{author});
+    ($data->{description})  = $html =~ m!<div class="item-excerpt trunc" itemprop="description" data-height="[^"]+">\s*(.*?)\s*</div>!si
+                                                                                                                                unless($data->{description});
 
     # other page data
-    ($data->{isbn10})       = $html =~ m!<li><strong>ISBN 10:</strong>\s*([^<]+)</li>!si;
-    ($data->{binding})      = $html =~ m!<strong>Format:</strong>\s*<span property="dc:format">([^<]+)!si;
-    ($data->{thumb})        = $html =~ m!"(http://\w+.bdcdn.net/assets/images/book/medium/\d+/\d+/\d+.jpg)"!si;
+    ($data->{isbn10})       = $html =~ m!<label>ISBN10</label>\s*<span>(\d+)</span>!si;
+    ($data->{binding})      = $html =~ m!<label>Format</label>\s*<span>\s*([^\|]+)\|!si;
+    ($data->{thumb})        = $html =~ m!"(https://\w+.cloudfare.net/assets/images/book/medium/\d+/\d+/\d+.jpg)"!si;
     ($data->{width},$data->{height},$data->{depth},$data->{weight})
-                            = $html =~ m!<strong>Dimensions:</strong>\s*(\d+)mm\s*x\s*(\d+)mm\s*x\s*(\d+)mm\s*\|\s*(\d+)g!;
+                            = $html =~ m!<label>Dimensions</label>\s*<span>\s*([\d.]+)\s*x\s*([\d.]+)\s*x\s*([\d.]+)mm\s*\|\s*([\d.]+)g!;
 
     # clean up
     $data->{publisher} =~ s/&#0?39;/'/g     if($data->{publisher});
@@ -187,7 +191,7 @@ sub search {
 		'weight'		=> $data->{weight},
 		'width'		    => $data->{width},
 		'height'		=> $data->{height},
-        'html'          => $html
+#        'html'          => $html
 	};
 
 #use Data::Dumper;
